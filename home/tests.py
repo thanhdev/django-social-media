@@ -12,10 +12,14 @@ class HomePageTestCase(TestCase):
 
     def test_home_page_unauthenticated(self):
         response = self.client.get(self.home_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('login'))
+
+    def test_login_page_loads(self):
+        response = self.client.get(reverse('login'))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'home/index.html')
+        self.assertTemplateUsed(response, 'home/login.html')
         self.assertContains(response, 'Login to Your Account')
-        self.assertNotContains(response, 'Welcome, testuser!')
 
     def test_home_page_authenticated(self):
         self.client.login(username='testuser', password='12345')
@@ -23,22 +27,23 @@ class HomePageTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'home/authenticated_home.html')
         self.assertContains(response, 'Welcome, testuser!')
-        self.assertContains(response, 'Logo')
-        self.assertContains(response, 'Search...')
 
     def test_logout_link(self):
         self.client.login(username='testuser', password='12345')
         response = self.client.get(self.home_url)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Sign out')
 
     def test_unauthenticated_user_doesnt_see_header(self):
-        response = self.client.get(self.home_url)
+        response = self.client.get(reverse('login'))
+        self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'Logo')
         self.assertNotContains(response, 'Search...')
 
     def test_authenticated_user_sees_profile_dropdown(self):
         self.client.login(username='testuser', password='12345')
         response = self.client.get(self.home_url)
+        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Profile')
         self.assertContains(response, 'Settings')
 
@@ -131,3 +136,37 @@ class RegistrationTestCase(TestCase):
             validate_username('invalid username')
         with self.assertRaises(ValidationError):
             validate_username('invalid-username')
+
+
+class LoginTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.login_url = reverse('login')
+        self.home_url = reverse('home')
+        self.user = User.objects.create_user(username='testuser', password='12345')
+
+    def test_login_page_loads(self):
+        response = self.client.get(self.login_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home/login.html')
+
+    def test_successful_login(self):
+        response = self.client.post(self.login_url, {'username': 'testuser', 'password': '12345'})
+        self.assertRedirects(response, self.home_url)
+
+    def test_login_with_incorrect_password(self):
+        response = self.client.post(self.login_url, {'username': 'testuser', 'password': 'wrongpassword'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Please enter a correct username and password. "
+                                      "Note that both fields may be case-sensitive.")
+
+    def test_login_with_non_existent_user(self):
+        response = self.client.post(self.login_url, {'username': 'nonexistentuser', 'password': 'password'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Please enter a correct username and password. "
+                                      "Note that both fields may be case-sensitive.")
+
+    def test_authenticated_user_redirected_from_login(self):
+        self.client.login(username='testuser', password='12345')
+        response = self.client.get(self.login_url)
+        self.assertRedirects(response, self.home_url)
