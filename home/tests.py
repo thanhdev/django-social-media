@@ -13,7 +13,7 @@ class HomePageTestCase(TestCase):
     def test_home_page_unauthenticated(self):
         response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse("login"))
+        self.assertRedirects(response, reverse("login") + "?next=/")
 
     def test_login_page_loads(self):
         response = self.client.get(reverse("login"))
@@ -25,7 +25,7 @@ class HomePageTestCase(TestCase):
         self.client.login(username="testuser", password="12345")
         response = self.client.get(self.home_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "home/authenticated_home.html")
+        self.assertTemplateUsed(response, "home/index.html")
         self.assertContains(response, "Welcome, testuser!")
 
     def test_logout_link(self):
