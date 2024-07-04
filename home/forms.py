@@ -54,6 +54,18 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class PostForm(forms.ModelForm):
+    def clean(self):
+        cleaned_data = super().clean()
+        content = cleaned_data.get("content")
+        image = cleaned_data.get("image")
+
+        if not content and not image:
+            raise ValidationError(
+                {"content": "You must enter a message or upload an image."}
+            )
+
+        return cleaned_data
+
     class Meta:
         model = Post
         fields = ["content", "image"]
