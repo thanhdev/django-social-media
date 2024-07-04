@@ -1,10 +1,172 @@
 {% extends 'base/base.html' %}
+{% load humanize %}
+
+{% block extra_css %}
+    <style>
+        #drop-zone {
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .post-card {
+            background-color: #f9f9f9;
+            border: 1px solid #e1e1e1;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 15px;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .post-date {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        .post-body .post-content {
+            margin-bottom: 15px;
+        }
+
+        .post-image {
+            display: block;
+            margin: auto;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+{% endblock %}
 
 {% block title %}Home - Social Media App{% endblock %}
 
 {% block content %}
-<div class="bg-white shadow rounded-lg p-6">
-    <h1 class="text-2xl font-bold mb-4">Welcome, {{ user.username }}!</h1>
-    <p class="text-gray-600">This is your authenticated home page. The main content will go here.</p>
-</div>
+    <div class="bg-white shadow rounded-lg p-6">
+        <h1 class="text-2xl font-bold mb-4">Welcome, {{ user.username }}!</h1>
+
+        {# Create new post #}
+        <div class="mt-6">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <textarea name="content" class="w-full p-2 border border-gray-300 rounded-lg"
+                          placeholder="What's on your mind?" style="resize: none;"></textarea>
+                <div id="drop-zone" class="border-dashed border-2 border-gray-300 p-6 text-center cursor-pointer">
+                    <span id="drop-zone-text">Drag and drop an image here or click to select</span>
+                    <input id="file-input" type="file" name="image" accept="image/*" class="hidden"
+                           onchange="handleFiles(this.files)">
+                </div>
+                <button type="submit" class="mt-2 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg">Post</button>
+            </form>
+        </div>
+
+        {# List of posts #}
+        <div class="mt-6">
+            <h2 class="text-xl font-bold mb-4">Newsfeed</h2>
+            {% for post in posts %}
+                <div class="post-card">
+                    <div class="post-header">
+                        <div class="user-info">
+                            {% if user.avatar %}
+                                <img src="{{ post.user.avatar.url }}" alt="User avatar" class="user-avatar">
+                            {% else %}
+                                <img src="https://ui-avatars.com/api/?name={{ post.user.username }}" alt="User avatar" class="user-avatar">
+                            {% endif %}
+                            <span class="user-name">{{ post.user.username }}</span>
+                        </div>
+                        <div class="post-date">{{ post.created_at|naturaltime }}</div>
+                    </div>
+                    <div class="post-body">
+                        <p class="post-content">{{ post.content }}</p>
+                        {% if post.image %}
+                            <img src="{{ post.image.url }}" alt="Post image" class="post-image">
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const dropZoneText = document.getElementById('drop-zone-text'); // Get the text element
+
+        function handleFiles(files) {
+            const file = files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    // Hide the drop zone text
+                    dropZoneText.style.display = 'none';
+
+                    // Get the height of the image
+                    let imgHeight = img.height;
+                    // Limit the height to 500px
+                    imgHeight = imgHeight > 500 ? 500 : imgHeight;
+                    // Set the drop zone's height
+                    dropZone.style.height = `${imgHeight}px`;
+
+                    // Set the background image to the loaded image
+                    dropZone.style.backgroundImage = `url('${e.target.result}')`;
+                    // Ensure the image covers the drop zone, maintaining its aspect ratio
+                    dropZone.style.backgroundSize = 'contain';
+                    dropZone.style.backgroundRepeat = 'no-repeat';
+                    dropZone.style.backgroundPosition = 'center';
+                };
+                img.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        dropZone.addEventListener('click', function () {
+            document.getElementById('file-input').click();
+        });
+
+        dropZone.addEventListener('dragover', function (event) {
+            event.stopPropagation();
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'copy';
+            this.classList.add('bg-gray-200');
+        });
+
+        dropZone.addEventListener('dragleave', function (event) {
+            this.classList.remove('bg-gray-200');
+        });
+
+        dropZone.addEventListener('drop', function (event) {
+            event.stopPropagation();
+            event.preventDefault();
+            this.classList.remove('bg-gray-200');
+            const files = event.dataTransfer.files;
+            document.querySelector('input[type="file"]').files = files;
+            handleFiles(files); // You might want to define this function to do something with the files
+        });
+    </script>
 {% endblock %}

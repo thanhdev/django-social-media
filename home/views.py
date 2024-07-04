@@ -3,12 +3,25 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, PostForm
+from .models import Post
 
 
 @login_required(login_url="login")
 def home(request):
-    return render(request, "home/index.html")
+    if request.method == "POST":
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            new_post = form.save(commit=False)
+            new_post.user = request.user
+            new_post.save()
+            return redirect("home")
+    else:
+        form = PostForm()
+
+    posts = Post.objects.all()[:20]
+
+    return render(request, "home/index.html", {"posts": posts, "form": form})
 
 
 def register(request):

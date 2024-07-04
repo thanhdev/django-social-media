@@ -1,8 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 import re
+
+from .models import User, Post
 
 
 def validate_username(value):
@@ -14,7 +15,7 @@ def validate_username(value):
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
-        required=True,
+        required=False,
         widget=forms.EmailInput(attrs={"placeholder": "Enter your email"}),
     )
     username = forms.CharField(
@@ -50,3 +51,9 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class PostForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ["content", "image"]
