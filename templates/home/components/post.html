@@ -1,4 +1,5 @@
 {% load humanize %}
+{% load custom_filters %}
 
 <div class="bg-white border border-gray-200 rounded-lg mb-5 p-4">
     <div class="flex justify-between items-center mb-4">
@@ -10,7 +11,7 @@
         <div class="text-xs text-gray-500">{{ post.created_at|naturaltime }}</div>
     </div>
     <div class="post-body">
-        <p class="mb-4">{{ post.content }}</p>
+        <p class="mb-4">{{ post.content|urlize|linebreaks }}</p>
         {% if post.image %}
         <a href="{{ post.image.url }}" target="_blank">
             <img src="{{ post.image.url }}" alt="Post image" class="block mx-auto max-w-full rounded-lg">
