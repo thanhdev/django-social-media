@@ -1,66 +1,6 @@
 {% extends 'base/base.html' %}
 {% load humanize %}
 
-{% block extra_css %}
-    <style>
-        #drop-zone {
-            min-height: 150px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 15px;
-        }
-
-        .post-card {
-            background-color: #f9f9f9;
-            border: 1px solid #e1e1e1;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            padding: 15px;
-        }
-
-        .post-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        .user-name {
-            font-weight: bold;
-        }
-
-        .post-date {
-            font-size: 0.8rem;
-            color: #777;
-        }
-
-        .post-body .post-content {
-            margin-bottom: 15px;
-        }
-
-        .post-image {
-            display: block;
-            margin: auto;
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-        }
-    </style>
-{% endblock %}
-
 {% block title %}Home - Social Media App{% endblock %}
 
 {% block content %}
@@ -73,12 +13,16 @@
                 {% csrf_token %}
                 <textarea name="content" class="w-full p-2 border border-gray-300 rounded-lg"
                           placeholder="What's on your mind?" style="resize: none;"></textarea>
-                <div id="drop-zone" class="border-dashed border-2 border-gray-300 p-6 text-center cursor-pointer">
+                <div id="drop-zone"
+                     class="min-h-[150px] flex items-center justify-center mt-4
+                            border-dashed border-2 border-gray-300 p-6 text-center cursor-pointer">
                     <span id="drop-zone-text">Drag and drop an image here or click to select</span>
                     <input id="file-input" type="file" name="image" accept="image/*" class="hidden"
                            onchange="handleFiles(this.files)">
                 </div>
-                <button type="submit" class="mt-2 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg">Post</button>
+                <div class="mt-4 text-right">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Post</button>
+                </div>
             </form>
         </div>
 
@@ -86,22 +30,19 @@
         <div class="mt-6">
             <h2 class="text-xl font-bold mb-4">Newsfeed</h2>
             {% for post in posts %}
-                <div class="post-card">
-                    <div class="post-header">
-                        <div class="user-info">
-                            {% if user.avatar %}
-                                <img src="{{ post.user.avatar.url }}" alt="User avatar" class="user-avatar">
-                            {% else %}
-                                <img src="https://ui-avatars.com/api/?name={{ post.user.username }}" alt="User avatar" class="user-avatar">
-                            {% endif %}
-                            <span class="user-name">{{ post.user.username }}</span>
+                <div class="bg-gray-100 border border-gray-200 rounded-lg mb-5 p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center">
+                            <img src="{{ post.user.avatar_url }}" alt="User avatar"
+                                 class="w-10 h-10 rounded-full mr-2.5">
+                            <span class="font-bold">{{ post.user.username }}</span>
                         </div>
-                        <div class="post-date">{{ post.created_at|naturaltime }}</div>
+                        <div class="text-xs text-gray-500">{{ post.created_at|naturaltime }}</div>
                     </div>
                     <div class="post-body">
-                        <p class="post-content">{{ post.content }}</p>
+                        <p class="mb-4">{{ post.content }}</p>
                         {% if post.image %}
-                            <img src="{{ post.image.url }}" alt="Post image" class="post-image">
+                            <img src="{{ post.image.url }}" alt="Post image" class="block mx-auto max-w-full rounded-lg">
                         {% endif %}
                     </div>
                 </div>
