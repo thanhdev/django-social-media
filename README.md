@@ -58,20 +58,34 @@ To get this project running on your local machine, follow these steps:
    POSTGRES_HOST=db
    POSTGRES_PORT=5432
    ```
-5. Build the Docker containers:
+5. Build and access the Docker container:
    ```
-   docker-compose up --build
+   sh run.sh
    ```
-6. Create a superuser for Django admin:
+6. Create a superuser for Django admin (optional):
    ```
-   docker-compose exec web python manage.py createsuperuser
+   python manage.py createsuperuser
    ```
-7. Visit `http://localhost:8000` in your web browser to view the application.
+7. Run the server:
+   ```
+   sh server.sh
+   ```
+8. Visit `http://localhost:8000` in your web browser to view the application.
 
 ## Configuration
 
 - The database settings can be configured in the `.env.db` file.
 - Additional Django settings can be configured in the `.env` file.
+
+## Deployment
+1. Manual Deployment
+   ```
+   docker compose -f docker-compose.production.yml up --build
+   ```
+2. Continuous Deployment
+   ```
+   nohup ./cd.py &
+   ```
 
 ## Contributing
 

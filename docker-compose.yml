@@ -3,7 +3,6 @@ version: '3.8'
 services:
   web:
     build: .
-#    command: gunicorn social_media.wsgi:application --bind 0.0.0.0:8000 --reload
     command: sleep infinity
     volumes:
       - .:/app
