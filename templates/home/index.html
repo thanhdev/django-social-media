@@ -1,113 +1,18 @@
 {% extends 'base/base.html' %}
-{% load humanize %}
 
 {% block title %}Home - Social Media App{% endblock %}
 
 {% block content %}
-    <div class="bg-white shadow rounded-lg p-6">
-        <h1 class="text-2xl font-bold mb-4">Welcome, {{ user.username }}!</h1>
+    <div class="max-w-2xl mx-auto">
+        <!-- Create a post form -->
+        {% include 'home/components/post_form.html' %}
 
-        {# Create new post #}
-        <div class="mt-6">
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <textarea name="content" class="w-full p-2 border border-gray-300 rounded-lg"
-                          placeholder="What's on your mind?" style="resize: none;"></textarea>
-                <div id="drop-zone"
-                     class="min-h-[150px] flex items-center justify-center mt-4
-                            border-dashed border-2 border-gray-300 p-6 text-center cursor-pointer">
-                    <span id="drop-zone-text">Drag and drop an image here or click to select</span>
-                    <input id="file-input" type="file" name="image" accept="image/*" class="hidden"
-                           onchange="handleFiles(this.files)">
-                </div>
-                <div class="mt-4 text-right">
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg">Post</button>
-                </div>
-            </form>
-        </div>
-
-        {# List of posts #}
+        <!-- Newsfeed -->
         <div class="mt-6">
             <h2 class="text-xl font-bold mb-4">Newsfeed</h2>
             {% for post in posts %}
-                <div class="bg-gray-100 border border-gray-200 rounded-lg mb-5 p-4">
-                    <div class="flex justify-between items-center mb-4">
-                        <div class="flex items-center">
-                            <img src="{{ post.user.avatar_url }}" alt="User avatar"
-                                 class="w-10 h-10 rounded-full mr-2.5">
-                            <span class="font-bold">{{ post.user.username }}</span>
-                        </div>
-                        <div class="text-xs text-gray-500">{{ post.created_at|naturaltime }}</div>
-                    </div>
-                    <div class="post-body">
-                        <p class="mb-4">{{ post.content }}</p>
-                        {% if post.image %}
-                            <img src="{{ post.image.url }}" alt="Post image" class="block mx-auto max-w-full rounded-lg">
-                        {% endif %}
-                    </div>
-                </div>
+                {% include 'home/components/post.html' %}
             {% endfor %}
         </div>
     </div>
-{% endblock %}
-
-{% block extra_js %}
-    <script>
-        const dropZone = document.getElementById('drop-zone');
-        const dropZoneText = document.getElementById('drop-zone-text'); // Get the text element
-
-        function handleFiles(files) {
-            const file = files[0];
-            const reader = new FileReader();
-
-            reader.onload = function (e) {
-                const img = new Image();
-                img.onload = function () {
-                    // Hide the drop zone text
-                    dropZoneText.style.display = 'none';
-
-                    // Get the height of the image
-                    let imgHeight = img.height;
-                    // Limit the height to 500px
-                    imgHeight = imgHeight > 500 ? 500 : imgHeight;
-                    // Set the drop zone's height
-                    dropZone.style.height = `${imgHeight}px`;
-
-                    // Set the background image to the loaded image
-                    dropZone.style.backgroundImage = `url('${e.target.result}')`;
-                    // Ensure the image covers the drop zone, maintaining its aspect ratio
-                    dropZone.style.backgroundSize = 'contain';
-                    dropZone.style.backgroundRepeat = 'no-repeat';
-                    dropZone.style.backgroundPosition = 'center';
-                };
-                img.src = e.target.result;
-            };
-
-            reader.readAsDataURL(file);
-        }
-
-        dropZone.addEventListener('click', function () {
-            document.getElementById('file-input').click();
-        });
-
-        dropZone.addEventListener('dragover', function (event) {
-            event.stopPropagation();
-            event.preventDefault();
-            event.dataTransfer.dropEffect = 'copy';
-            this.classList.add('bg-gray-200');
-        });
-
-        dropZone.addEventListener('dragleave', function (event) {
-            this.classList.remove('bg-gray-200');
-        });
-
-        dropZone.addEventListener('drop', function (event) {
-            event.stopPropagation();
-            event.preventDefault();
-            this.classList.remove('bg-gray-200');
-            const files = event.dataTransfer.files;
-            document.querySelector('input[type="file"]').files = files;
-            handleFiles(files); // You might want to define this function to do something with the files
-        });
-    </script>
 {% endblock %}
