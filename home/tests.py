@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth.models import User
+from .models import User
 from django.core.exceptions import ValidationError
 
 
@@ -46,6 +46,15 @@ class HomePageTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Profile")
         self.assertContains(response, "Settings")
+
+    def test_create_post(self):
+        self.assertFalse(self.user.posts.exists())
+        self.client.login(username="testuser", password="12345")
+        response = self.client.post(self.home_url, {"content": "This is a test post."})
+        self.assertRedirects(response, self.home_url)
+        post = self.user.posts.first()
+        self.assertIsNotNone(post)
+        self.assertEqual(post.content, "This is a test post.")
 
 
 class RegistrationTestCase(TestCase):
