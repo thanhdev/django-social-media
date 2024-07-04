@@ -1,18 +1,11 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils.functional import cached_property
 
 
 class User(AbstractUser):
     avatar = models.ImageField(upload_to="user-avatars/", blank=True)
     bio = models.TextField(blank=True)
     REQUIRED_FIELDS = []
-
-    @cached_property
-    def avatar_url(self):
-        if self.avatar:
-            return self.avatar.url
-        return f"https://ui-avatars.com/api/?name={self.username}"
 
 
 class Post(models.Model):
