@@ -19,6 +19,7 @@ def get_posts_queryset():
         .select_related("user")
         .prefetch_related("liked_by")
         .annotate(likes_count=Count("liked_by"))
+        .order_by("-created_at")
     )
 
 
