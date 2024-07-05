@@ -1,3 +1,6 @@
+{% load compress %}
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,10 +8,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Social Media App{% endblock %}</title>
     <link rel="icon" type="image/x-icon" href="https://portal.azure.com/Content/favicon.ico">
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Flowbite CSS CDN -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet" />
+
+    {% compress css %}
+        <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    {% endcompress %}
+
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-gray-100">
@@ -62,14 +66,9 @@
     </footer>
 
     <!-- Flowbite JS CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+    {% compress js %}
+        <script src="{% static 'js/flowbite.min.js' %}"></script>
+    {% endcompress %}
     {% block extra_js %}{% endblock %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof initFlowbite === 'function') {
-                initFlowbite();
-            }
-        });
-    </script>
 </body>
 </html>

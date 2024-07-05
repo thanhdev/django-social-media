@@ -5,5 +5,7 @@ db.sqlite3
 .env
 .env.db
 staticfiles
+static/CACHE
 .idea
 media
+node_modules

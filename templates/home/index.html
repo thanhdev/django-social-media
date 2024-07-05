@@ -36,6 +36,7 @@
                 .then(response => {
                     loading = false;
                     postsElement.innerHTML += response;
+                    initFlowbite();
                 });
         }
     };
