@@ -72,6 +72,6 @@ def get_posts(request):
 @login_required(login_url="login")
 def delete_post(request, post_id):
     post = Post.objects.get(pk=post_id)
-    if post.user == request.user:
+    if post.user == request.user or request.user.is_superuser:
         post.delete()
     return redirect("home")

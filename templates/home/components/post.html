@@ -10,7 +10,8 @@
         </div>
         <div class="text-xs text-gray-500">{{ post.created_at|naturaltime }}</div>
     </div>
-    {% if post.user == user %}
+
+    {% if post.user == user or user.is_superuser %}
         <form id="deleteForm{{ post.pk }}" action="{% url 'delete_post' post.pk %}" method="post">
             {% csrf_token %}
             <div class="absolute top-2 right-2 hidden group-hover:block" data-modal-target="deleteModal{{ post.pk }}" data-modal-toggle="deleteModal{{ post.pk }}">
@@ -54,6 +55,7 @@
             </div>
         </div>
     {% endif %}
+
     <div class="post-body">
         {% if post.image %}
             <p class="mb-4">{{ post.content|urlize|linebreaks }}</p>
