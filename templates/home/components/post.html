@@ -1,0 +1,23 @@
+{% load humanize %}
+{% load custom_filters %}
+
+<div class="bg-white border border-gray-200 rounded-lg mb-5 p-4">
+    <div class="flex justify-between items-center mb-4">
+        <div class="flex items-center">
+            <img src="{{ post.user.avatar_url }}" alt="User avatar"
+                 class="w-10 h-10 rounded-full mr-2.5">
+            <span class="font-bold">{{ post.user.username }}</span>
+        </div>
+        <div class="text-xs text-gray-500">{{ post.created_at|naturaltime }}</div>
+    </div>
+    <div class="post-body">
+        {% if post.image %}
+        <p class="mb-4">{{ post.content|urlize|linebreaks }}</p>
+        <a href="{{ post.image.url }}" target="_blank">
+            <img src="{{ post.image.url }}" alt="Post image" class="block mx-auto max-w-full rounded-lg">
+        </a>
+        {% else %}
+        <p>{{ post.content|urlize|youtube_thumbnail|linebreaks }}</p>
+        {% endif %}
+    </div>
+</div>
