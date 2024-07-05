@@ -9,6 +9,10 @@ from .models import Post
 POSTS_PER_PAGE = 5
 
 
+def get_posts_queryset():
+    return Post.objects.all().select_related("user")
+
+
 @login_required(login_url="login")
 def home(request):
     if request.method == "POST":
@@ -21,7 +25,7 @@ def home(request):
     else:
         form = PostForm()
 
-    posts = Post.objects.all()[:POSTS_PER_PAGE]
+    posts = get_posts_queryset()[:POSTS_PER_PAGE]
 
     return render(request, "home/index.html", {"posts": posts, "form": form})
 
@@ -65,7 +69,7 @@ def get_posts(request):
         offset = int(request.GET.get("offset", 0))
     except ValueError:
         offset = 0
-    posts = Post.objects.all()[offset : offset + POSTS_PER_PAGE]
+    posts = get_posts_queryset()[offset : offset + POSTS_PER_PAGE]
     return render(request, "home/components/post_list.html", {"posts": posts})
 
 
