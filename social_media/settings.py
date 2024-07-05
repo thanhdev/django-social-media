@@ -76,6 +76,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "social_media.wsgi.application"
 
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "ERROR",
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "error.log",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -127,12 +145,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-COMPRESS_ROOT = BASE_DIR / "static"
+COMPRESS_ROOT = BASE_DIR / "staticfiles"
 COMPRESS_ENABLED = True
-STATICFILES_FINDERS = ("compressor.finders.CompressorFinder",)
+STATICFILES_FINDERS = [
+    "compressor.finders.CompressorFinder",  # Django-Compressor
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
 
 # Media files
 MEDIA_URL = "/media/"
