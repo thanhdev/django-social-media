@@ -1,7 +1,7 @@
 {% load humanize %}
 {% load custom_filters %}
 
-<div class="bg-white border border-gray-200 rounded-lg mb-5 p-4 relative group">
+<div id="post{{ post.pk }}" class="bg-white border border-gray-200 rounded-lg mb-5 p-4 relative group">
     <div class="flex justify-between items-center mb-4">
         <div class="flex items-center">
             <img src="{{ post.user.avatar_url }}" alt="User avatar"
@@ -12,17 +12,13 @@
     </div>
 
     {% if post.user == user or user.is_superuser %}
-        <form id="deleteForm{{ post.pk }}" action="{% url 'delete_post' post.pk %}" method="post">
-            {% csrf_token %}
-            <div class="absolute top-2 right-2 hidden group-hover:block" data-modal-target="deleteModal{{ post.pk }}" data-modal-toggle="deleteModal{{ post.pk }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 cursor-pointer" fill="none"
-                     viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </div>
-        </form>
-
+        <div class="absolute top-2 right-2 hidden group-hover:block" data-modal-target="deleteModal{{ post.pk }}" data-modal-toggle="deleteModal{{ post.pk }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 cursor-pointer" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </div>
         <!-- Delete Modal -->
         <div id="deleteModal{{ post.pk }}" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
             <div class="relative w-full max-w-md max-h-full">
@@ -49,7 +45,7 @@
                     <!-- Modal footer -->
                     <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
                         <button data-modal-hide="deleteModal{{ post.pk }}" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Cancel</button>
-                        <button data-modal-hide="deleteModal{{ post.pk }}" type="button" onclick="document.getElementById('deleteForm{{ post.pk }}').submit();" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Delete</button>
+                        <button data-modal-hide="deleteModal{{ post.pk }}" type="button" onclick="deletePost({{ post.pk }})" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Delete</button>
                     </div>
                 </div>
             </div>
@@ -81,6 +77,30 @@
 </div>
 
 <script>
+
+function deletePost(postId) {
+    fetch(`/api/posts/${postId}/delete/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const post = document.getElementById(`post${postId}`);
+            post.remove();
+        } else {
+            // Refresh
+            window.location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
 
 function likePost(postId) {
     fetch(`/api/posts/${postId}/like/`, {
