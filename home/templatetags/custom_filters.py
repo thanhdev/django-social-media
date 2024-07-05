@@ -18,7 +18,7 @@ def urlize(value):
 
     # Replace other URLs with clickable links
     value = url_pattern.sub(
-        r'<a class="text-blue-500" href="\1"' r' target="_blank">\1</a>', value
+        r'<a class="text-blue-600" href="\1"' r' target="_blank">\1</a>', value
     )
 
     return mark_safe(value)  # Mark the string as safe for HTML output
@@ -28,6 +28,6 @@ def urlize(value):
 def youtube_thumbnail(value):
     # Add YouTube thumbnail if the URL is a YouTube video
     if thumbnail := get_youtube_thumbnail(value):
-        value += f'<br><img src="{thumbnail}" style="max-width: 100%;">'
+        value += f'<br><img src="{thumbnail}" class="max-w-full">'
 
     return mark_safe(value)
