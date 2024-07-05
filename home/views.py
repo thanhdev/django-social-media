@@ -6,6 +6,9 @@ from .forms import CustomUserCreationForm, PostForm
 from .models import Post
 
 
+POSTS_PER_PAGE = 5
+
+
 @login_required(login_url="login")
 def home(request):
     if request.method == "POST":
@@ -18,7 +21,7 @@ def home(request):
     else:
         form = PostForm()
 
-    posts = Post.objects.all()[:20]
+    posts = Post.objects.all()[:POSTS_PER_PAGE]
 
     return render(request, "home/index.html", {"posts": posts, "form": form})
 
@@ -54,3 +57,13 @@ def user_login(request):
     else:
         form = AuthenticationForm()
     return render(request, "home/login.html", {"form": form})
+
+
+@login_required(login_url="login")
+def get_posts(request):
+    try:
+        offset = int(request.GET.get("offset", 0))
+    except ValueError:
+        offset = 0
+    posts = Post.objects.all()[offset : offset + POSTS_PER_PAGE]
+    return render(request, "home/components/post_list.html", {"posts": posts})

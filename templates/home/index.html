@@ -10,9 +10,34 @@
         <!-- Newsfeed -->
         <div class="mt-6">
             <h2 class="text-xl font-bold mb-4">Newsfeed</h2>
-            {% for post in posts %}
-                {% include 'home/components/post.html' %}
-            {% endfor %}
+            <div id="posts">
+                {% include 'home/components/post_list.html' %}
+            </div>
         </div>
     </div>
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    // Infinite scroll
+    let loading = false;
+    const postsElement = document.getElementById('posts');
+
+    window.onscroll = function() {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+            if (loading) {
+                return;
+            }
+            loading = true;
+            const offset = postsElement.children.length;
+            fetch(`/api/posts/?offset=${offset}`)
+                .then(response => response.text())
+                .then(response => {
+                    loading = false;
+                    postsElement.innerHTML += response;
+                });
+        }
+    };
+</script>
 {% endblock %}
