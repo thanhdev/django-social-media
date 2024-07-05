@@ -9,6 +9,7 @@ urlpatterns = [
     path("login/", views.user_login, name="login"),
     # APIs
     path("api/posts/", views.get_posts, name="get_posts"),
+    path("api/posts/<int:post_id>/delete/", views.delete_post, name="delete_post"),
 ]
 
 # Serving media files in development

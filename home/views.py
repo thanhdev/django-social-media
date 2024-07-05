@@ -67,3 +67,11 @@ def get_posts(request):
         offset = 0
     posts = Post.objects.all()[offset : offset + POSTS_PER_PAGE]
     return render(request, "home/components/post_list.html", {"posts": posts})
+
+
+@login_required(login_url="login")
+def delete_post(request, post_id):
+    post = Post.objects.get(pk=post_id)
+    if post.user == request.user:
+        post.delete()
+    return redirect("home")
