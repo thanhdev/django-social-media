@@ -21,6 +21,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to="posts/", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    liked_by = models.ManyToManyField(User, related_name="liked_posts", blank=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.created_at}"

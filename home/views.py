@@ -1,7 +1,11 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
+from django.views.decorators.http import require_POST
+
 from .forms import CustomUserCreationForm, PostForm
 from .models import Post
 
@@ -10,7 +14,12 @@ POSTS_PER_PAGE = 5
 
 
 def get_posts_queryset():
-    return Post.objects.all().select_related("user")
+    return (
+        Post.objects.all()
+        .select_related("user")
+        .prefetch_related("liked_by")
+        .annotate(likes_count=Count("liked_by"))
+    )
 
 
 @login_required(login_url="login")
@@ -79,3 +88,29 @@ def delete_post(request, post_id):
     if post.user == request.user or request.user.is_superuser:
         post.delete()
     return redirect("home")
+
+
+@login_required(login_url="login")
+@require_POST
+def like_post(request, post_id):
+    try:
+        post = Post.objects.get(pk=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse(
+            {"status": "error", "message": "Post not found"}, status=404
+        )
+
+    if request.user in post.liked_by.all():
+        post.liked_by.remove(request.user)
+        liked = False
+    else:
+        post.liked_by.add(request.user)
+        liked = True
+
+    return JsonResponse(
+        {
+            "status": "success",
+            "liked": liked,
+            "likes_count": post.liked_by.count(),
+        }
+    )

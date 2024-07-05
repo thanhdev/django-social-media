@@ -66,4 +66,51 @@
             <p>{{ post.content|urlize|youtube_thumbnail|linebreaks }}</p>
         {% endif %}
     </div>
+
+    <!-- Like button -->
+    <div class="mt-4 flex items-center justify-end">
+        <span id="likeCount{{ post.pk }}" class="mr-2 text-gray-500">{{ post.likes_count }}</span>
+        <button class="flex items-center text-gray-500 hover:text-red-500 focus:outline-none" onclick="likePost({{ post.pk }})">
+            {% if user in post.liked_by.all %}
+                <i id="likeIcon{{ post.pk }}" class="far fa-heart text-2xl fa-solid text-red-500"></i>
+            {% else %}
+                <i id="likeIcon{{ post.pk }}" class="far fa-heart text-2xl"></i>
+            {% endif %}
+        </button>
+    </div>
 </div>
+
+<script>
+
+function likePost(postId) {
+    fetch(`/api/posts/${postId}/like/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({}),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const likeCount = document.getElementById(`likeCount${postId}`);
+            const likeIcon = document.getElementById(`likeIcon${postId}`);
+
+            likeCount.textContent = data.likes_count;
+
+            if (data.liked) {
+                likeIcon.classList.add('fa-solid', 'text-red-500');
+            } else {
+                likeIcon.classList.remove('fa-solid', 'text-red-500');
+            }
+        } else {
+            // Refresh
+            window.location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
