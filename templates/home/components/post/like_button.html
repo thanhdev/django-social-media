@@ -6,19 +6,3 @@
         <i id="likeIcon{{ post.pk }}" class="far fa-heart text-2xl"></i>
     {% endif %}
 </button>
-
-<script>
-    function likePost(postId) {
-        fetch(`/api/posts/${postId}/like/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({}),
-        })
-            .then(response => response.text())
-            .then(response => reloadPost(postId, response))
-            .catch((error) => console.log(error));
-    }
-</script>

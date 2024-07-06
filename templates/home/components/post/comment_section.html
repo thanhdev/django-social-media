@@ -22,28 +22,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    function addComment(postId) {
-        const post = document.getElementById(`post${postId}`);
-        const contentTextarea = post.querySelector(`[name="content${postId}"]`);
-        const content = contentTextarea.value.trim();
-
-        if (!content) {
-            contentTextarea.focus();
-            return;
-        }
-
-        fetch(`/api/posts/${postId}/comments/`, {
-            method: 'POST',
-            body: JSON.stringify({content}),
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-                'Content-Type': 'application/json',
-            }
-        })
-            .then(response => response.text())
-            .then(response => reloadPost(postId, response))
-            .catch((error) => console.log(error));
-    }
-</script>

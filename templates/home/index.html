@@ -2,6 +2,14 @@
 
 {% block title %}Home - Social Media App{% endblock %}
 
+{% block extra_css %}
+    <style>
+        .comment-content a {
+            color: rgb(28 100 242 / var(--tw-text-opacity));
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
     <div class="max-w-2xl mx-auto">
         <!-- Create a post form -->
@@ -26,12 +34,12 @@
         initFlowbite();
     }
 
-    function deleteComment(postId, commentId) {
-        fetch(`/api/comments/${commentId}/delete/`, {
+    function likePost(postId) {
+        fetch(`/api/posts/${postId}/like/`, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': getCookie('csrftoken'),
-            }
+            },
         })
             .then(response => response.text())
             .then(response => reloadPost(postId, response))
@@ -43,12 +51,45 @@
             method: 'POST',
             headers: {
                 'X-CSRFToken': getCookie('csrftoken'),
-                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({}),
         })
             .then(() => document.getElementById(`post${postId}`).remove())
             .catch(() => document.getElementById(`post${postId}`).remove());
+    }
+
+    function addComment(postId) {
+        const post = document.getElementById(`post${postId}`);
+        const contentTextarea = post.querySelector(`[name="content${postId}"]`);
+        const content = contentTextarea.value.trim();
+
+        if (!content) {
+            contentTextarea.focus();
+            return;
+        }
+
+        fetch(`/api/posts/${postId}/comments/`, {
+            method: 'POST',
+            body: JSON.stringify({content}),
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.text())
+            .then(response => reloadPost(postId, response))
+            .catch((error) => console.log(error));
+    }
+
+    function deleteComment(postId, commentId) {
+        fetch(`/api/comments/${commentId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            }
+        })
+            .then(response => response.text())
+            .then(response => reloadPost(postId, response))
+            .catch((error) => console.log(error));
     }
 
     // Infinite scroll
