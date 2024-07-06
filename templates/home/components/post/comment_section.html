@@ -30,6 +30,12 @@
         const post = document.getElementById(`post${postId}`);
         const contentTextarea = post.querySelector(`[name="content${postId}"]`);
         const content = contentTextarea.value.trim();
+
+        if (!content) {
+            contentTextarea.focus();
+            return;
+        }
+
         const commentCount = document.getElementById(`commentCount${postId}`);
 
         fetch(`/api/posts/${postId}/comments/`, {
