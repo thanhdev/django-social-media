@@ -25,11 +25,13 @@
     </div>
 
     <div class="post-footer">
-        <div class="mt-4 flex items-center justify-end">
-            <span id="likeCount{{ post.pk }}" class="mr-2 text-gray-500">{{ post.likes_count }}</span>
-            {% include 'home/components/post/like_button.html' %}
+        <div class="mt-4 flex items-center justify-between">
+            <span class="text-lg font-semibold">Comments ({{ post.comments_count }})</span>
+            <div class="flex items-center">
+                <span class="mr-2 text-gray-500">{{ post.likes_count }}</span>
+                {% include 'home/components/post/like_button.html' %}
+            </div>
         </div>
-
         <!-- Comment Section -->
         {% include 'home/components/post/comment_section.html' %}
     </div>
