@@ -2,55 +2,18 @@
 {% load custom_filters %}
 
 <div id="post{{ post.pk }}" class="bg-white border border-gray-200 rounded-lg mb-5 p-4 relative group">
-    <div class="flex justify-between items-center mb-4">
+    <div class="post-header flex justify-between items-center mb-4">
         <div class="flex items-center">
             <img src="{{ post.user.avatar_url }}" alt="User avatar"
                  class="w-10 h-10 rounded-full mr-2.5">
             <span class="font-bold">{{ post.user.username }}</span>
         </div>
         <div class="text-xs text-gray-500">{{ post.created_at|naturaltime }}</div>
-    </div>
 
-    {% if post.user == user or user.is_superuser %}
-        <div class="absolute top-2 right-2 hidden group-hover:block" data-modal-target="deleteModal{{ post.pk }}" data-modal-toggle="deleteModal{{ post.pk }}">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 cursor-pointer" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </div>
-        <!-- Delete Modal -->
-        <div id="deleteModal{{ post.pk }}" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
-            <div class="relative w-full max-w-md max-h-full">
-                <!-- Modal content -->
-                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                    <!-- Modal header -->
-                    <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                            Confirm Deletion
-                        </h3>
-                        <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="deleteModal{{ post.pk }}">
-                            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"></path>
-                            </svg>
-                            <span class="sr-only">Close modal</span>
-                        </button>
-                    </div>
-                    <!-- Modal body -->
-                    <div class="p-6 space-y-6">
-                        <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                            Are you sure you want to delete this post? This action cannot be undone.
-                        </p>
-                    </div>
-                    <!-- Modal footer -->
-                    <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
-                        <button data-modal-hide="deleteModal{{ post.pk }}" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">Cancel</button>
-                        <button data-modal-hide="deleteModal{{ post.pk }}" type="button" onclick="deletePost({{ post.pk }})" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">Delete</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+        {% if post.user == user or user.is_superuser %}
+            {% include 'home/components/post/delete_button.html' %}
+        {% endif %}
+    </div>
 
     <div class="post-body">
         {% if post.image %}
@@ -63,74 +26,10 @@
         {% endif %}
     </div>
 
-    <!-- Like button -->
-    <div class="mt-4 flex items-center justify-end">
-        <span id="likeCount{{ post.pk }}" class="mr-2 text-gray-500">{{ post.likes_count }}</span>
-        <button class="flex items-center text-gray-500 hover:text-red-500 focus:outline-none" onclick="likePost({{ post.pk }})">
-            {% if user in post.liked_by.all %}
-                <i id="likeIcon{{ post.pk }}" class="far fa-heart text-2xl fa-solid text-red-500"></i>
-            {% else %}
-                <i id="likeIcon{{ post.pk }}" class="far fa-heart text-2xl"></i>
-            {% endif %}
-        </button>
+    <div class="post-footer">
+        <div class="mt-4 flex items-center justify-end">
+            <span id="likeCount{{ post.pk }}" class="mr-2 text-gray-500">{{ post.likes_count }}</span>
+            {% include 'home/components/post/like_button.html' %}
+        </div>
     </div>
 </div>
-
-<script>
-
-function deletePost(postId) {
-    fetch(`/api/posts/${postId}/delete/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({}),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            const post = document.getElementById(`post${postId}`);
-            post.remove();
-        } else {
-            // Refresh
-            window.location.reload();
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-function likePost(postId) {
-    fetch(`/api/posts/${postId}/like/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({}),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            const likeCount = document.getElementById(`likeCount${postId}`);
-            const likeIcon = document.getElementById(`likeIcon${postId}`);
-
-            likeCount.textContent = data.likes_count;
-
-            if (data.liked) {
-                likeIcon.classList.add('fa-solid', 'text-red-500');
-            } else {
-                likeIcon.classList.remove('fa-solid', 'text-red-500');
-            }
-        } else {
-            // Refresh
-            window.location.reload();
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-</script>
