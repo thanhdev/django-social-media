@@ -1,0 +1,56 @@
+<div class="mt-6">
+    <h3 class="text-lg font-semibold mb-4">Comments ({{ post.comments_count }})</h3>
+
+    <!-- List of comments -->
+    <div id="commentsList{{ post.pk }}" class="space-y-4 mb-6">
+        {% include 'home/components/post/comment_list.html' %}
+    </div>
+
+    <!-- Comment form -->
+    <div id="commentForm{{ post.pk }}" class="mt-4">
+        <div class="flex items-start">
+            <img src="{{ user.avatar_url }}" alt="{{ user.username }}" class="w-8 h-8 rounded-full mr-2.5">
+            <div class="flex-grow">
+                <div class="flex items-center">
+                    <textarea name="content{{ post.pk }}" rows="1"
+                              class="flex-grow px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none mr-2"
+                              placeholder="Add a comment..."></textarea>
+                    <button type="button" onclick="addComment({{ post.pk }})"
+                            class="px-3 py-2 text-blue-500 hover:text-blue-600 focus:outline-none focus:text-blue-700">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addComment(postId) {
+        const post = document.getElementById(`post${postId}`);
+        const contentTextarea = post.querySelector(`[name="content${postId}"]`);
+        const content = contentTextarea.value.trim();
+
+        fetch(`/api/posts/${postId}/comments/`, {
+            method: 'POST',
+            body: JSON.stringify({content}),
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => response.text())
+            .then(response => {
+                const commentsList = document.getElementById(`commentsList${postId}`);
+
+                commentsList.innerHTML = response;
+                // Clear the textarea
+                contentTextarea.value = '';
+
+                initFlowbite();
+            })
+            .catch(error => {
+                window.location.reload();
+            });
+    }
+</script>

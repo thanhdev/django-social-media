@@ -11,6 +11,7 @@ urlpatterns = [
     path("api/posts/", views.get_posts, name="get_posts"),
     path("api/posts/<int:post_id>/delete/", views.delete_post, name="delete_post"),
     path("api/posts/<int:post_id>/like/", views.like_post, name="like_post"),
+    path("api/posts/<int:post_id>/comments/", views.add_comment, name="add_comment"),
 ]
 
 # Serving media files in development

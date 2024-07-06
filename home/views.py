@@ -1,14 +1,15 @@
+import json
+
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.views.decorators.http import require_POST
 
 from .forms import CustomUserCreationForm, PostForm
-from .models import Post
-
+from .models import Post, PostComment
 
 POSTS_PER_PAGE = 5
 
@@ -18,7 +19,9 @@ def get_posts_queryset():
         Post.objects.all()
         .select_related("user")
         .prefetch_related("liked_by")
-        .annotate(likes_count=Count("liked_by"))
+        .prefetch_related("comments")
+        .annotate(likes_count=Count("liked_by", distinct=True))
+        .annotate(comments_count=Count("comments", distinct=True))
         .order_by("-created_at")
     )
 
@@ -86,12 +89,7 @@ def get_posts(request):
 @login_required(login_url="login")
 @require_POST
 def delete_post(request, post_id):
-    try:
-        post = Post.objects.get(pk=post_id)
-    except Post.DoesNotExist:
-        return JsonResponse(
-            {"status": "error", "message": "Post not found"}, status=404
-        )
+    post = get_object_or_404(Post, id=post_id)
     if post.user == request.user or request.user.is_superuser:
         post.delete()
     return JsonResponse({"status": "success"})
@@ -100,12 +98,7 @@ def delete_post(request, post_id):
 @login_required(login_url="login")
 @require_POST
 def like_post(request, post_id):
-    try:
-        post = Post.objects.get(pk=post_id)
-    except Post.DoesNotExist:
-        return JsonResponse(
-            {"status": "error", "message": "Post not found"}, status=404
-        )
+    post = get_object_or_404(Post, id=post_id)
 
     if request.user in post.liked_by.all():
         post.liked_by.remove(request.user)
@@ -121,3 +114,18 @@ def like_post(request, post_id):
             "likes_count": post.liked_by.count(),
         }
     )
+
+
+@login_required(login_url="login")
+@require_POST
+def add_comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    body = json.loads(request.body)
+    content = body.get("content")
+
+    if not content:
+        return HttpResponse("Comment content is required.", status=400)
+
+    PostComment.objects.create(user=request.user, post=post, content=content)
+
+    return render(request, "home/components/post/comment_list.html", {"post": post})

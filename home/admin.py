@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from home.models import Post, User
+from home.models import Post, User, PostComment
 
 
 @admin.register(User)
@@ -59,3 +59,22 @@ class PostAdmin(admin.ModelAdmin):
     )
     filter_horizontal = ()
     raw_id_fields = ("user",)
+
+
+@admin.register(PostComment)
+class PostCommentAdmin(admin.ModelAdmin):
+    list_display = ("user", "post", "content", "created_at")
+    list_filter = ("created_at",)
+    search_fields = ("content", "user__username", "post__content")
+    date_hierarchy = "created_at"
+    ordering = ("-created_at",)
+    readonly_fields = ("created_at",)
+    fieldsets = (
+        (None, {"fields": ("user", "post", "content")}),
+        (
+            "Date information",
+            {"fields": ("created_at",), "classes": ("collapse",)},
+        ),
+    )
+    filter_horizontal = ()
+    raw_id_fields = ("user", "post")

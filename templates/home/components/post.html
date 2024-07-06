@@ -17,12 +17,12 @@
 
     <div class="post-body">
         {% if post.image %}
-            <p class="mb-4">{{ post.content|urlize|linebreaks }}</p>
+            <div class="mb-4">{{ post.content|urlize|linebreaks }}</div>
             <a href="{{ post.image.url }}" target="_blank">
                 <img src="{{ post.image.url }}" alt="Post image" class="block mx-auto max-w-full rounded-lg">
             </a>
         {% else %}
-            <p>{{ post.content|urlize|youtube_thumbnail|linebreaks }}</p>
+            <div>{{ post.content|urlize|youtube_thumbnail|linebreaks }}</div>
         {% endif %}
     </div>
 
@@ -31,5 +31,8 @@
             <span id="likeCount{{ post.pk }}" class="mr-2 text-gray-500">{{ post.likes_count }}</span>
             {% include 'home/components/post/like_button.html' %}
         </div>
+
+        <!-- Comment Section -->
+        {% include 'home/components/post/comment_section.html' %}
     </div>
 </div>

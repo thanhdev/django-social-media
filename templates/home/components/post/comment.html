@@ -1,0 +1,15 @@
+{% load humanize %}
+<style>
+    .comment-content a {
+        color: rgb(28 100 242 / var(--tw-text-opacity));
+    }
+</style>
+<div class="flex items-start mr-4">
+    <img src="{{ comment.user.avatar_url }}" alt="{{ comment.user.username }}"
+         class="w-8 h-8 rounded-full mr-2.5">
+    <div>
+        <p class="font-semibold">{{ comment.user.username }}</p>
+        <div class="comment-content text-sm text-gray-600">{{ comment.content|urlize|linebreaks }}</div>
+        <p class="text-xs text-gray-400 mt-1">{{ comment.created_at|naturaltime }}</p>
+    </div>
+</div>

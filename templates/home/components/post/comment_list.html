@@ -1,0 +1,5 @@
+{% for comment in post.comments.all|slice:":5"|slice:"::-1" %}
+    {% include 'home/components/post/comment.html' %}
+{% empty %}
+    <p id="noComments{{ post.pk }}" class="text-gray-500">No comments yet.</p>
+{% endfor %}
