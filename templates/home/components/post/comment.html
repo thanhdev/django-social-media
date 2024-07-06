@@ -4,10 +4,21 @@
         color: rgb(28 100 242 / var(--tw-text-opacity));
     }
 </style>
-<div class="flex items-start mr-4">
+<div class="flex items-start mr-4 relative group/comment">
     <img src="{{ comment.user.avatar_url }}" alt="{{ comment.user.username }}"
          class="w-8 h-8 rounded-full mr-2.5">
     <div>
+        {% if comment.user == user or user.is_superuser %}
+            <!-- Delete Comment Button -->
+            <div class="absolute top-2 right-2 hidden group-hover/comment:block" onclick="deleteComment({{ post.pk }}, {{ comment.pk }})">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 cursor-pointer" fill="none"
+                     viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </div>
+        {% endif %}
+
         <p class="font-semibold">{{ comment.user.username }}</p>
         <div class="comment-content text-sm text-gray-600">{{ comment.content|urlize|linebreaks }}</div>
         <p class="text-xs text-gray-400 mt-1">{{ comment.created_at|naturaltime }}</p>

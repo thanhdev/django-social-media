@@ -1,4 +1,4 @@
-<div class="absolute top-2 right-2 hidden group-hover:block" data-modal-target="deleteModal{{ post.pk }}"
+<div class="absolute top-2 right-2 hidden group-hover/post:block" data-modal-target="deleteModal{{ post.pk }}"
      data-modal-toggle="deleteModal{{ post.pk }}">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 cursor-pointer" fill="none"
          viewBox="0 0 24 24" stroke="currentColor">
@@ -48,17 +48,3 @@
         </div>
     </div>
 </div>
-<script>
-    function deletePost(postId) {
-        fetch(`/api/posts/${postId}/delete/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken'),
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({}),
-        })
-            .then(() => document.getElementById(`post${postId}`).remove())
-            .catch(() => document.getElementById(`post${postId}`).remove());
-    }
-</script>

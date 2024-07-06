@@ -26,6 +26,31 @@
         initFlowbite();
     }
 
+    function deleteComment(postId, commentId) {
+        fetch(`/api/comments/${commentId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            }
+        })
+            .then(response => response.text())
+            .then(response => reloadPost(postId, response))
+            .catch((error) => console.log(error));
+    }
+
+    function deletePost(postId) {
+        fetch(`/api/posts/${postId}/delete/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({}),
+        })
+            .then(() => document.getElementById(`post${postId}`).remove())
+            .catch(() => document.getElementById(`post${postId}`).remove());
+    }
+
     // Infinite scroll
     let loading = false;
     let loadAll = false;

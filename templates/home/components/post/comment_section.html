@@ -44,6 +44,6 @@
         })
             .then(response => response.text())
             .then(response => reloadPost(postId, response))
-            .catch(() => window.location.reload());
+            .catch((error) => console.log(error));
     }
 </script>

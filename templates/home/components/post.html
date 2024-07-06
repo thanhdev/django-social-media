@@ -1,7 +1,7 @@
 {% load humanize %}
 {% load custom_filters %}
 
-<div id="post{{ post.pk }}" class="bg-white border border-gray-200 rounded-lg mb-5 p-4 relative group">
+<div id="post{{ post.pk }}" class="bg-white border border-gray-200 rounded-lg mb-5 p-4 relative group/post">
     <div class="post-header flex justify-between items-center mb-4">
         <div class="flex items-center">
             <img src="{{ post.user.avatar_url }}" alt="User avatar"

@@ -126,3 +126,16 @@ def add_comment(request, post_id):
     post = get_object_or_404(get_posts_queryset(), id=post_id)
 
     return render(request, "home/components/post.html", {"post": post})
+
+
+@login_required
+@require_POST
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(PostComment, id=comment_id)
+    post_id = comment.post_id
+
+    if comment.user == request.user or request.user.is_superuser:
+        comment.delete()
+
+    post = get_object_or_404(get_posts_queryset(), id=post_id)
+    return render(request, "home/components/post.html", {"post": post})
