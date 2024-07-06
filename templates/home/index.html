@@ -20,6 +20,12 @@
 {% block extra_js %}
 
 <script>
+    function reloadPost(postId, html) {
+        const post = document.getElementById(`post${postId}`);
+        post.outerHTML = html;
+        initFlowbite();
+    }
+
     // Infinite scroll
     let loading = false;
     let loadAll = false;

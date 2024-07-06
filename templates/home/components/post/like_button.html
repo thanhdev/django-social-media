@@ -17,26 +17,8 @@
             },
             body: JSON.stringify({}),
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const likeCount = document.getElementById(`likeCount${postId}`);
-                    const likeIcon = document.getElementById(`likeIcon${postId}`);
-
-                    likeCount.textContent = data.likes_count;
-
-                    if (data.liked) {
-                        likeIcon.classList.add('fa-solid', 'text-red-500');
-                    } else {
-                        likeIcon.classList.remove('fa-solid', 'text-red-500');
-                    }
-                } else {
-                    // Refresh
-                    window.location.reload();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+            .then(response => response.text())
+            .then(response => reloadPost(postId, response))
+            .catch(() => window.location.reload());
     }
 </script>

@@ -1,5 +1,5 @@
 <div class="mt-6">
-    <h3 class="text-lg font-semibold mb-4">Comments (<span id="commentCount{{ post.pk }}">{{ post.comments_count }}</span>)</h3>
+    <h3 class="text-lg font-semibold mb-4">Comments ({{ post.comments_count }})</h3>
 
     <!-- List of comments -->
     <div id="commentsList{{ post.pk }}" class="space-y-4 mb-6 text-sm">
@@ -7,12 +7,12 @@
     </div>
 
     <!-- Comment form -->
-    <div id="commentForm{{ post.pk }}" class="mt-4">
+    <div class="mt-4">
         <div class="flex items-start">
             <img src="{{ user.avatar_url }}" alt="{{ user.username }}" class="w-8 h-8 rounded-full mr-2.5">
             <div class="flex-grow">
                 <div class="flex items-center">
-                    <textarea name="content{{ post.pk }}" rows="1"
+                    <textarea name="content{{ post.pk }}" rows="1" maxlength="500"
                               class="flex-grow px-3 py-2 text-sm text-gray-700 border rounded-lg focus:outline-none mr-2"
                               placeholder="Add a comment..."></textarea>
                     <button type="button" onclick="addComment({{ post.pk }})"
@@ -36,8 +36,6 @@
             return;
         }
 
-        const commentCount = document.getElementById(`commentCount${postId}`);
-
         fetch(`/api/posts/${postId}/comments/`, {
             method: 'POST',
             body: JSON.stringify({content}),
@@ -47,18 +45,7 @@
             }
         })
             .then(response => response.text())
-            .then(response => {
-                const commentsList = document.getElementById(`commentsList${postId}`);
-                commentsList.innerHTML = response;
-                contentTextarea.value = '';
-
-                // Update the comment count
-                commentCount.textContent = `${parseInt(commentCount.textContent) + 1}`;
-
-                initFlowbite();
-            })
-            .catch(error => {
-                window.location.reload();
-            });
+            .then(response => reloadPost(postId, response))
+            .catch(() => window.location.reload());
     }
 </script>

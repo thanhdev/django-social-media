@@ -42,7 +42,7 @@ To get this project running on your local machine, follow these steps:
    ```
 3. Create a `.env` file in the project root directory with the following contents:
    ```
-   DEBUG=0
+   DEBUG=1
    SECRET_KEY=your_secret_key
    DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
    SQL_ENGINE=django.db.backends.postgresql

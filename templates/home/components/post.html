@@ -18,9 +18,7 @@
     <div class="post-body">
         {% if post.image %}
             <div class="mb-4">{{ post.content|urlize|linebreaks }}</div>
-            <a href="{{ post.image.url }}" target="_blank">
-                <img src="{{ post.image.url }}" alt="Post image" class="block mx-auto max-w-full rounded-lg">
-            </a>
+            <img src="{{ post.image.url }}" alt="Post image" class="block mx-auto max-w-full rounded-lg">
         {% else %}
             <div>{{ post.content|urlize|youtube_thumbnail|linebreaks }}</div>
         {% endif %}

@@ -2,7 +2,7 @@ import json
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
@@ -26,7 +26,7 @@ def get_posts_queryset():
     )
 
 
-@login_required(login_url="login")
+@login_required
 def home(request):
     if request.method == "POST":
         form = PostForm(request.POST, request.FILES)
@@ -76,7 +76,7 @@ def user_login(request):
     return render(request, "home/login.html", {"form": form})
 
 
-@login_required(login_url="login")
+@login_required
 def get_posts(request):
     try:
         offset = int(request.GET.get("offset", 0))
@@ -86,37 +86,31 @@ def get_posts(request):
     return render(request, "home/components/post_list.html", {"posts": posts})
 
 
-@login_required(login_url="login")
+@login_required
 @require_POST
 def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     if post.user == request.user or request.user.is_superuser:
         post.delete()
-    return JsonResponse({"status": "success"})
+    return HttpResponse(status=204)
 
 
-@login_required(login_url="login")
+@login_required
 @require_POST
 def like_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 
     if request.user in post.liked_by.all():
         post.liked_by.remove(request.user)
-        liked = False
     else:
         post.liked_by.add(request.user)
-        liked = True
 
-    return JsonResponse(
-        {
-            "status": "success",
-            "liked": liked,
-            "likes_count": post.liked_by.count(),
-        }
-    )
+    post = get_object_or_404(get_posts_queryset(), id=post_id)
+
+    return render(request, "home/components/post.html", {"post": post})
 
 
-@login_required(login_url="login")
+@login_required
 @require_POST
 def add_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -125,7 +119,10 @@ def add_comment(request, post_id):
 
     if not content:
         return HttpResponse("Comment content is required.", status=400)
+    elif len(content) > 500:
+        return HttpResponse("Comment content is too long.", status=400)
 
     PostComment.objects.create(user=request.user, post=post, content=content)
+    post = get_object_or_404(get_posts_queryset(), id=post_id)
 
-    return render(request, "home/components/post/comment_list.html", {"post": post})
+    return render(request, "home/components/post.html", {"post": post})

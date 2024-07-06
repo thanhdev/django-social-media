@@ -58,18 +58,7 @@
             },
             body: JSON.stringify({}),
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const post = document.getElementById(`post${postId}`);
-                    post.remove();
-                } else {
-                    // Refresh
-                    window.location.reload();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+            .then(() => document.getElementById(`post${postId}`).remove())
+            .catch(() => document.getElementById(`post${postId}`).remove());
     }
 </script>
