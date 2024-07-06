@@ -6,13 +6,16 @@ This project is a simple social media application built with Django. It allows u
 
 - User authentication (sign up, log in, log out)
 - Posting content with text and images
-- Viewing a feed of posts from all users
+- Viewing a feed of posts from all users with infinite scrolling
+- Prettify the post with clickable urls and YouTube thumbnails.
+- Like, delete posts without refreshing the page.
 
 ## Technologies Used
 
 - Python
 - Django
 - HTML/CSS
+- JavaScript
 - Tailwind CSS for styling
 - PostgreSQL for the database
 - Docker for containerization
