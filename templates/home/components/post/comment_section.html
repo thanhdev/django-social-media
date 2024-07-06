@@ -2,7 +2,7 @@
     <h3 class="text-lg font-semibold mb-4">Comments (<span id="commentCount{{ post.pk }}">{{ post.comments_count }}</span>)</h3>
 
     <!-- List of comments -->
-    <div id="commentsList{{ post.pk }}" class="space-y-4 mb-6">
+    <div id="commentsList{{ post.pk }}" class="space-y-4 mb-6 text-sm">
         {% include 'home/components/post/comment_list.html' %}
     </div>
 
