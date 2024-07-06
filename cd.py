@@ -19,7 +19,7 @@ def check_for_git_changes():
         print("New changes detected. Deploying...")
         out, error = run_command(f"{BASE_COMMAND} stop")
         print(out, error)
-        out, error = run_command(f"{BASE_COMMAND} up -d")
+        out, error = run_command(f"{BASE_COMMAND} up -d --build")
         print(out, error)
         print("Deployed successfully.")
     else:

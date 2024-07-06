@@ -25,6 +25,7 @@ COPY . /app/
 # Install npm dependencies
 COPY package.json package-lock.json* ./
 RUN npm install
+RUN npx tailwindcss -i ./static/src/input.css -o ./static/src/output.css
 
 # Run the entrypoint script
 COPY entrypoint.sh /app/entrypoint.sh
