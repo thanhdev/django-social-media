@@ -22,18 +22,23 @@
 <script>
     // Infinite scroll
     let loading = false;
+    let loadAll = false;
     const postsElement = document.getElementById('posts');
 
     window.onscroll = function() {
         if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-            if (loading) {
+            if (loading || loadAll) {
                 return;
             }
             loading = true;
-            const offset = postsElement.children.length;
+            const offset = postsElement.querySelectorAll('[id^="post"]').length;
             fetch(`/api/posts/?offset=${offset}`)
                 .then(response => response.text())
                 .then(response => {
+                    if (!response) {
+                        loadAll = true;
+                        return;
+                    }
                     loading = false;
                     postsElement.innerHTML += response;
                     initFlowbite();
