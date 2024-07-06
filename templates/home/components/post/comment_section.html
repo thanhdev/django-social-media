@@ -1,5 +1,5 @@
 <div class="mt-6">
-    <h3 class="text-lg font-semibold mb-4">Comments ({{ post.comments_count }})</h3>
+    <h3 class="text-lg font-semibold mb-4">Comments (<span id="commentCount{{ post.pk }}">{{ post.comments_count }}</span>)</h3>
 
     <!-- List of comments -->
     <div id="commentsList{{ post.pk }}" class="space-y-4 mb-6">
@@ -30,6 +30,7 @@
         const post = document.getElementById(`post${postId}`);
         const contentTextarea = post.querySelector(`[name="content${postId}"]`);
         const content = contentTextarea.value.trim();
+        const commentCount = document.getElementById(`commentCount${postId}`);
 
         fetch(`/api/posts/${postId}/comments/`, {
             method: 'POST',
@@ -42,10 +43,11 @@
             .then(response => response.text())
             .then(response => {
                 const commentsList = document.getElementById(`commentsList${postId}`);
-
                 commentsList.innerHTML = response;
-                // Clear the textarea
                 contentTextarea.value = '';
+
+                // Update the comment count
+                commentCount.textContent = `${parseInt(commentCount.textContent) + 1}`;
 
                 initFlowbite();
             })
