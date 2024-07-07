@@ -1,5 +1,6 @@
 import json
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.http import HttpResponse
@@ -74,6 +75,23 @@ def user_login(request):
     else:
         form = AuthenticationForm()
     return render(request, "home/login.html", {"form": form})
+
+
+@login_required
+def user_settings(request):
+    if request.method == "POST":
+        # Handle avatar upload
+        if "avatar" in request.FILES:
+            request.user.avatar = request.FILES["avatar"]
+
+        # Update bio
+        request.user.bio = request.POST.get("bio", "")
+
+        request.user.save()
+        messages.success(request, "Your settings were successfully updated!")
+        return redirect("user_settings")
+
+    return render(request, "home/settings.html")
 
 
 @login_required
