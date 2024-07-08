@@ -10,6 +10,7 @@ urlpatterns = [
     path("login/", views.user_login, name="login"),
     path("logout/", auth_views.LogoutView.as_view(next_page="/"), name="logout"),
     path("settings/", views.user_settings, name="user_settings"),
+    path("@<str:username>/", views.user_profile, name="user_profile"),
     # APIs
     path("api/posts/", views.get_posts, name="get_posts"),
     path("api/posts/<int:post_id>/delete/", views.delete_post, name="delete_post"),

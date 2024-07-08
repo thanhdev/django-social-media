@@ -1,0 +1,32 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ profile_user.username }}'s Profile - Social Media App{% endblock %}
+
+{% block content %}
+    <div class="max-w-2xl mx-auto">
+        <!-- User Info Section -->
+        <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <div class="flex items-center">
+                <img src="{{ profile_user.avatar.url }}" alt="{{ profile_user.username }}" class="w-24 h-24 rounded-full mr-6">
+                <div>
+                    <h2 class="text-2xl font-bold mb-2">{{ profile_user.username }}</h2>
+                    {% if profile_user.bio %}
+                        <p class="text-gray-600">{{ profile_user.bio }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- User's Posts Section -->
+        <div>
+            <h2 class="text-xl font-bold mb-4">{{ profile_user.username }}'s Posts</h2>
+            <div id="posts">
+                {% if posts %}
+                	{% include 'home/components/post_list.html' %}
+                {% else %}
+                    <p class="text-gray-600">They haven't posted anything yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

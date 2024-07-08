@@ -18,11 +18,14 @@
         textarea {
             resize: none;
         }
+
+        .comment-content a {
+            color: rgb(28 100 242 / var(--tw-text-opacity));
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-gray-100">
-{% if user.is_authenticated %}
     <header class="bg-white shadow-md py-4 mb-6">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center">
@@ -41,7 +44,8 @@
                 </div>
 
                 <!-- User Profile Dropdown -->
-                <div class="relative">
+                {% if user.is_authenticated %}
+                	<div class="relative">
                     <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown"
                             class="text-gray-700 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center"
                             type="button">
@@ -56,7 +60,7 @@
                     <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
                         <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownDefaultButton">
                             <li>
-                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
+                                <a href="{% url 'user_profile' user.username %}" class="block px-4 py-2 hover:bg-gray-100">Profile</a>
                             </li>
                             <li>
                                 <a href="{% url 'user_settings' %}"
@@ -68,10 +72,10 @@
                         </ul>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
     </header>
-{% endif %}
 
 <main class="container mx-auto mt-10 px-4">
     {% block content %}

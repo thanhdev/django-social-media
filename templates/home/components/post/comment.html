@@ -1,7 +1,9 @@
 {% load humanize %}
 <div class="flex items-start mr-4 relative group/comment">
-    <img src="{{ comment.user.avatar_url }}" alt="{{ comment.user.username }}"
-         class="w-8 h-8 rounded-full mr-2.5">
+    <a href="{% url 'user_profile' comment.user.username %}">
+        <img src="{{ comment.user.avatar_url }}" alt="{{ comment.user.username }}"
+             class="w-8 h-8 rounded-full mr-2.5">
+    </a>
     <div>
         {% if comment.user == user or user.is_superuser %}
             <!-- Delete Comment Button -->
@@ -14,7 +16,7 @@
             </div>
         {% endif %}
 
-        <p class="font-semibold">{{ comment.user.username }}</p>
+        <p class="font-semibold"><a href="{% url 'user_profile' comment.user.username %}">{{ comment.user.username }}</a></p>
         <div class="comment-content text-sm text-gray-600">{{ comment.content|urlize|linebreaks }}</div>
         <p class="text-xs text-gray-400 mt-1">{{ comment.created_at|naturaltime }}</p>
     </div>

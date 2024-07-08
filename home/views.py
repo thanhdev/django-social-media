@@ -10,7 +10,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.views.decorators.http import require_POST
 
 from .forms import CustomUserCreationForm, PostForm
-from .models import Post, PostComment
+from .models import Post, PostComment, User
 
 POSTS_PER_PAGE = 5
 
@@ -92,6 +92,17 @@ def user_settings(request):
         return redirect("user_settings")
 
     return render(request, "home/settings.html")
+
+
+@login_required
+def user_profile(request, username):
+    user = get_object_or_404(User, username=username)
+    posts = get_posts_queryset().filter(user=user)
+    context = {
+        "profile_user": user,
+        "posts": posts,
+    }
+    return render(request, "home/profile.html", context)
 
 
 @login_required
