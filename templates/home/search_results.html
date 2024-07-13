@@ -1,0 +1,42 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-2xl font-bold mb-6">Search Results for "{{ query }}"</h1>
+
+    <div class="mb-8">
+        <h2 class="text-xl font-semibold mb-4">Users</h2>
+        {% if users %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for user in users %}
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <img src="{{ user.avatar_url }}" alt="{{ user.username }}" class="w-16 h-16 rounded-full mx-auto mb-2">
+                        <h3 class="text-lg font-semibold text-center">{{ user.username }}</h3>
+                        <p class="text-gray-600 text-center">{{ user.first_name }} {{ user.last_name }}</p>
+                        <a href="{% url 'user_profile' user.username %}" class="block text-center mt-2 text-blue-500 hover:underline">View Profile</a>
+                    </div>
+                {% endfor %}
+            </div>
+            {% include 'home/components/pagination.html' with page_obj=users page_param='users_page' %}
+        {% else %}
+            <p>No users found.</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <h2 class="text-xl font-semibold mb-4">Posts</h2>
+        {% if posts %}
+            <div class="space-y-4">
+                {% for post in posts %}
+                    {% include 'home/components/post.html' with post=post %}
+                {% endfor %}
+            </div>
+            {% include 'home/components/pagination.html' with page_obj=posts page_param='posts_page' %}
+        {% else %}
+            <p>No posts found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

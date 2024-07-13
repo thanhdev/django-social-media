@@ -24,6 +24,7 @@
         }
     </style>
     {% block extra_css %}{% endblock %}
+    <script src="{% static 'js/utils.js' %}"></script>
 </head>
 <body class="bg-gray-100">
     <header class="bg-white shadow-md py-4 mb-6">
@@ -33,11 +34,19 @@
                 <div class="flex items-center space-x-4 w-2/3">
                     <a href="/" class="text-2xl font-bold text-blue-600">Django</a>
                     <div class="w-full max-w-xl">
-                        <form>
-                            <label>
-                                <input type="search"
-                                       class="w-full px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                       placeholder="Search...">
+                        <form action="{% url 'search' %}" method="get">
+                            <label class="relative block">
+                                <span class="sr-only">Search</span>
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-2">
+                                    <svg class="h-5 w-5 fill-gray-300" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </span>
+                                <input type="search" name="q"
+                                    class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Search users or posts...">
                             </label>
                         </form>
                     </div>
@@ -88,8 +97,6 @@
 
 <!-- Flowbite JS CDN -->
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js"></script>
-
-<script src="{% static 'js/utils.js' %}"></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

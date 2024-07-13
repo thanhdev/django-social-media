@@ -11,6 +11,15 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(next_page="/"), name="logout"),
     path("settings/", views.user_settings, name="user_settings"),
     path("@<str:username>/", views.user_profile, name="user_profile"),
+    path(
+        "password_change/",
+        views.CustomPasswordChangeView.as_view(),
+        name="password_change",
+    ),
+    path(
+        "password_change/done/", views.password_change_done, name="password_change_done"
+    ),
+    path("search/", views.search, name="search"),
     # APIs
     path("api/posts/", views.get_posts, name="get_posts"),
     path("api/posts/<int:post_id>/delete/", views.delete_post, name="delete_post"),

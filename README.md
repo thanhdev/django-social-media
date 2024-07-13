@@ -46,9 +46,9 @@ To get this project running on your local machine, follow these steps:
    SECRET_KEY=your_secret_key
    DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
    SQL_ENGINE=django.db.backends.postgresql
-   SQL_DATABASE=social_media
-   SQL_USER=social_media_user
-   SQL_PASSWORD=social_media_password
+   SQL_DATABASE=your_db_name
+   SQL_USER=your_db_user
+   SQL_PASSWORD=your_db_password
    SQL_HOST=db
    SQL_PORT=5432
    DATABASE=postgres
