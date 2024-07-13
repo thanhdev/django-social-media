@@ -43,36 +43,23 @@
                 </button>
             </div>
         </form>
+
+        <div class="mt-8 pt-6 border-t border-gray-200">
+            <h2 class="text-lg font-medium text-gray-900">Password</h2>
+            <p class="mt-1 text-sm text-gray-600">
+                Want to update your password? Click the link below to change it.
+            </p>
+            <div class="mt-4">
+                <a href="{% url 'password_change' %}"
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Change Password
+                </a>
+            </div>
+        </div>
     </div>
 {% endblock %}
 
 {% block extra_js %}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const avatarInput = document.getElementById('avatar');
-            const avatarPreview = document.getElementById('avatar-preview');
-            const bioTextarea = document.getElementById('bio');
-
-            avatarInput.addEventListener('change', function (event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        avatarPreview.querySelector('img').src = String(e.target.result);
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            bioTextarea.addEventListener('focus', function () {
-                this.classList.remove('bg-gray-100');
-                this.classList.add('bg-white');
-            });
-
-            bioTextarea.addEventListener('blur', function () {
-                this.classList.add('bg-gray-100');
-                this.classList.remove('bg-white');
-            });
-        });
     </script>
 {% endblock %}

@@ -8,6 +8,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.views.decorators.http import require_POST
+from django.utils.decorators import method_decorator
+from django.urls import reverse_lazy
+from django.contrib.auth.views import PasswordChangeView
 
 from .forms import CustomUserCreationForm, PostForm
 from .models import Post, PostComment, User
@@ -92,6 +95,18 @@ def user_settings(request):
         return redirect("user_settings")
 
     return render(request, "home/settings.html")
+
+
+@method_decorator(login_required, name="dispatch")
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = "home/password_change.html"
+    success_url = reverse_lazy("password_change_done")
+
+
+@login_required
+def password_change_done(request):
+    messages.success(request, "Your password was successfully updated!")
+    return redirect("user_settings")
 
 
 @login_required
