@@ -11,6 +11,8 @@ from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordChangeView
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 from .forms import CustomUserCreationForm, PostForm
 from .models import Post, PostComment, User
@@ -118,6 +120,34 @@ def user_profile(request, username):
         "posts": posts,
     }
     return render(request, "home/profile.html", context)
+
+
+def search(request):
+    query = request.GET.get("q")
+    if query:
+        users = (
+            User.objects.filter(
+                Q(username__icontains=query)
+                | Q(first_name__icontains=query)
+                | Q(last_name__icontains=query)
+            )
+            .distinct()
+            .order_by("-id")
+        )
+        posts = get_posts_queryset().filter(content__icontains=query)
+    else:
+        users = User.objects.none()
+        posts = Post.objects.none()
+
+    users_page = Paginator(users, 10).get_page(request.GET.get("users_page"))
+    posts_page = Paginator(posts, 10).get_page(request.GET.get("posts_page"))
+
+    context = {
+        "query": query,
+        "users": users_page,
+        "posts": posts_page,
+    }
+    return render(request, "home/search_results.html", context)
 
 
 @login_required

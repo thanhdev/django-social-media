@@ -19,6 +19,7 @@ urlpatterns = [
     path(
         "password_change/done/", views.password_change_done, name="password_change_done"
     ),
+    path("search/", views.search, name="search"),
     # APIs
     path("api/posts/", views.get_posts, name="get_posts"),
     path("api/posts/<int:post_id>/delete/", views.delete_post, name="delete_post"),
