@@ -1,5 +1,3 @@
-import json
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -7,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.contrib.auth.views import PasswordChangeView
@@ -161,12 +159,14 @@ def get_posts(request):
 
 
 @login_required
-@require_POST
+@require_http_methods(["DELETE"])
 def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     if post.user == request.user or request.user.is_superuser:
         post.delete()
-    return HttpResponse(status=204)
+        return HttpResponse("", status=200)
+
+    return HttpResponse("Unauthorized", status=403)
 
 
 @login_required
@@ -188,8 +188,7 @@ def like_post(request, post_id):
 @require_POST
 def add_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    body = json.loads(request.body)
-    content = body.get("content")
+    content = request.POST.get("content")
 
     if not content:
         return HttpResponse("Comment content is required.", status=400)
@@ -203,7 +202,7 @@ def add_comment(request, post_id):
 
 
 @login_required
-@require_POST
+@require_http_methods(["DELETE"])
 def delete_comment(request, comment_id):
     comment = get_object_or_404(PostComment, id=comment_id)
     post_id = comment.post_id
