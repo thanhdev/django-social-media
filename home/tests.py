@@ -34,11 +34,10 @@ class HomePageTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Sign out")
 
-    def test_unauthenticated_user_doesnt_see_header(self):
+    def test_unauthenticated_user_doesnt_see_content(self):
         response = self.client.get(reverse("login"))
         self.assertEqual(response.status_code, 200)
-        self.assertNotContains(response, "Logo")
-        self.assertNotContains(response, "Search...")
+        self.assertNotContains(response, "Welcome,")
 
     def test_authenticated_user_sees_profile_dropdown(self):
         self.client.login(username="testuser", password="12345")
