@@ -20,18 +20,6 @@ function reloadPost(postId, html) {
     initFlowbite();
 }
 
-function likePost(postId) {
-    fetch(`/api/posts/${postId}/like/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-        },
-    })
-        .then(response => response.text())
-        .then(response => reloadPost(postId, response))
-        .catch((error) => console.log(error));
-}
-
 function deletePost(postId) {
     fetch(`/api/posts/${postId}/delete/`, {
         method: 'POST',

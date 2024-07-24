@@ -24,9 +24,10 @@
         }
     </style>
     {% block extra_css %}{% endblock %}
+    <script src="{% static 'js/htmx.min.js' %}"></script>
     <script src="{% static 'js/utils.js' %}"></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     <header class="bg-white shadow-md py-4 mb-6">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center">
@@ -98,5 +99,12 @@
 <!-- Flowbite JS CDN -->
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js"></script>
 {% block extra_js %}{% endblock %}
+<script>
+    document.body.addEventListener('htmx:afterSwap', function(event) {
+        if (typeof initFlowbite === 'function') {
+            initFlowbite();
+        }
+    });
+</script>
 </body>
 </html>
