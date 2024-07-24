@@ -7,7 +7,10 @@
     <div>
         {% if comment.user == user or user.is_superuser %}
             <!-- Delete Comment Button -->
-            <div class="absolute top-2 right-2 hidden group-hover/comment:block" onclick="deleteComment({{ post.pk }}, {{ comment.pk }})">
+            <div class="absolute top-2 right-2 hidden group-hover/comment:block"
+                 hx-post="{% url 'delete_comment' comment.pk %}"
+                 hx-target="#post{{ post.pk }}"
+                 hx-swap="outerHTML">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 cursor-pointer" fill="none"
                      viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

@@ -1,5 +1,3 @@
-import json
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
@@ -188,8 +186,7 @@ def like_post(request, post_id):
 @require_POST
 def add_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    body = json.loads(request.body)
-    content = body.get("content")
+    content = request.POST.get("content")
 
     if not content:
         return HttpResponse("Comment content is required.", status=400)
