@@ -164,7 +164,9 @@ def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     if post.user == request.user or request.user.is_superuser:
         post.delete()
-    return HttpResponse(status=204)
+        return HttpResponse("", status=200)
+
+    return HttpResponse("Unauthorized", status=403)
 
 
 @login_required
