@@ -1,4 +1,4 @@
-Django==4.2.14
+Django==4.2.15
 django-compressor==4.5
 gunicorn==22.0.0
 Pillow==10.4.0
